@@ -20,6 +20,7 @@
 #include <list>
 #include <memory>
 #include <mutex>  // NOLINT
+#include <shared_mutex>
 #include <utility>
 #include <vector>
 
@@ -105,6 +106,12 @@ class ExtendibleHashTable : public HashTable<K, V> {
    */
   auto Remove(const K &key) -> bool override;
 
+
+  // 辅助函数，扩充目录
+  auto Expansion() -> void;
+  // 辅助函数，桶分裂
+  auto RedistributeBucket(size_t idx) -> void;
+
   /**
    * Bucket class for each hash table bucket that the directory points to.
    */
@@ -162,6 +169,7 @@ class ExtendibleHashTable : public HashTable<K, V> {
     size_t size_;
     int depth_;
     std::list<std::pair<K, V>> list_;
+    mutable std::shared_mutex mutex_;   // 自定义的shared_mutex锁
   };
 
  private:
@@ -196,6 +204,9 @@ class ExtendibleHashTable : public HashTable<K, V> {
   auto GetGlobalDepthInternal() const -> int;
   auto GetLocalDepthInternal(int dir_index) const -> int;
   auto GetNumBucketsInternal() const -> int;
+
+  // 异或辅助函数
+  auto CalIndex(size_t &idx, int depth) -> size_t;
 };
 
 }  // namespace bustub
