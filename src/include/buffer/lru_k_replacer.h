@@ -127,6 +127,7 @@ class LRUKReplacer {
    * TODO(P1): Add implementation
    *
    * @brief Return replacer's size, which tracks the number of evictable frames.
+   *        返回可被驱逐页面的数目
    *
    * @return size_t
    */
@@ -136,10 +137,23 @@ class LRUKReplacer {
   // TODO(student): implement me! You can replace these member variables as you like.
   // Remove maybe_unused if you start using them.
   [[maybe_unused]] size_t current_timestamp_{0};
-  [[maybe_unused]] size_t curr_size_{0};
-  [[maybe_unused]] size_t replacer_size_;
-  [[maybe_unused]] size_t k_;
+  size_t curr_size_{0};   // 目前可被驱逐的页面数
+  size_t replacer_size_;  // buffer的大小
+  size_t k_;              // LRU-K的k次
   std::mutex latch_;
+
+  std::unordered_map<frame_id_t, size_t> access_count_;  // 页面被访问的次数，如果无页面就为0
+
+  // 访问次数 < k 的队列和哈希
+  std::list<frame_id_t> history_list_;
+  std::unordered_map<frame_id_t, std::list<frame_id_t>::iterator> history_map_;
+
+  // 访问次数 >= k 的队列和哈希
+  std::list<frame_id_t> cache_list_;
+  std::unordered_map<frame_id_t, std::list<frame_id_t>::iterator> cache_map_;
+
+  // 记录对应的页面是否可以被驱逐
+  std::unordered_map<frame_id_t, bool> is_evictable_;
 };
 
 }  // namespace bustub
