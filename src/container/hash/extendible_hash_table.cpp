@@ -73,7 +73,7 @@ auto ExtendibleHashTable<K, V>::GetNumBucketsInternal() const -> int {
 
 template <typename K, typename V>
 auto ExtendibleHashTable<K, V>::Find(const K &key, V &value) -> bool {
-  std::shared_lock lock(latch_);
+  std::scoped_lock<std::mutex> lock(latch_);
   auto index = IndexOf(key);            // 先通过 IndexOf函数 找到目录下标
   return dir_[index]->Find(key, value); // 调用Bucket的Find函数
 }

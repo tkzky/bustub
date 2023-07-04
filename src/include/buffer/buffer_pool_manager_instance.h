@@ -177,5 +177,11 @@ class BufferPoolManagerInstance : public BufferPoolManager {
   }
 
   // TODO(student): You may add additional private members and helper functions
+  // 辅助函数，重置页面信息
+  void ResetPage(Page* page) {
+    page->ResetMemory();
+    page->is_dirty_ = false;
+    page->page_id_ = INVALID_PAGE_ID;
+  }
 };
 }  // namespace bustub

@@ -13,6 +13,7 @@
 #include "buffer/lru_k_replacer.h"
 #include <exception>
 #include <mutex>
+#include "fmt/format-inl.h"
 
 namespace bustub {
 
@@ -114,13 +115,17 @@ void LRUKReplacer::SetEvictable(frame_id_t frame_id, bool set_evictable) {
         throw std::exception();
     }
 
+    if(access_count_[frame_id] == 0) {
+        return;
+    }
+
     if(is_evictable_[frame_id] && !set_evictable) {
         is_evictable_[frame_id] = false;
         curr_size_--;
     }
     if(!is_evictable_[frame_id] && set_evictable) {
         is_evictable_[frame_id] = true;
-        curr_size_--;
+        curr_size_++;
     }
 }
 
